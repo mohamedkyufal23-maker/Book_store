@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAGE & PRESS | online bookstore</title>
+    <!-- Font Awesome for icons (stars, cart, etc) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #f9fafc;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #1e293b;
+        }
+
+        /* consistent header/footer */
+        header {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            padding: 1rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e9eef2;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            background: linear-gradient(145deg, #2d3c5e, #1f2a44);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo span {
+            font-size: 1rem;
+            font-weight: 300;
+            margin-left: 4px;
+            color: #64748b;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.2rem;
+            list-style: none;
+        }
+        .nav-links li a {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            font-weight: 500;
+            color: #475569;
+            text-decoration: none;
+            border-radius: 40px;
+            transition: all 0.15s;
+        }
+        .nav-links li a:hover,
+        .nav-links li a.active {
+            background: #eef2f6;
+            color: #0f1825;
+        }
+        .cart-badge {
+            background: #cbd5e1;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            margin-left: 6px;
+            font-weight: 600;
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem 2rem 3rem;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* page sections – only active shown */
+        .page-section {
+            display: none;
+        }
+        .page-section.active-section {
+            display: block;
+        }
+
+        /* footer */
+        footer {
+            background: #ffffffdd;
+            border-top: 1px solid #dee4e9;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            color: #5f6c80;
+            font-size: 0.95rem;
+            backdrop-filter: blur(4px);
+        }
+
+        /* headings */
+        h2 {
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: 1.8rem;
+            letter-spacing: -0.02em;
+            border-left: 6px solid #2b3b5c;
+            padding-left: 1rem;
+        }
+
+        /* book grid (cards) */
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 22px;
+            padding: 1.2rem 1rem 1.4rem;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.02), 0 4px 10px rgba(0,20,30,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #f0f3f7;
+        }
+        .book-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 24px 36px -12px rgba(18, 52, 77, 0.15);
+        }
+
+        .book-cover {
+            width: 100%;
+            aspect-ratio: 3/4;
+            background: #d9e2ef;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #334e68;
+            font-weight: 300;
+            box-shadow: inset 0 -2px 10px rgba(0,0,0,0.02);
+        }
+
+        .book-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            line-height: 1.3;
+        }
+        .book-author {
+            color: #5f6c84;
+            font-size: 0.9rem;
+            margin: 0.2rem 0 0.4rem;
+        }
+        .price-rating {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0.6rem 0 1rem;
+        }
+        .price {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #1f2a44;
+        }
+        .rating {
+            color: #f4b740;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+        }
+        .rating span {
+            color: #a0b3c9;
+            margin-left: 4px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
+            flex-wrap: wrap;
+        }
+        .btn-sm {
+            background: #f1f4f9;
+            border: none;
+            padding: 0.45rem 0.9rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1e2b3c;
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            flex: 1 0 auto;
+            justify-content: center;
+        }
+        .btn-sm i {
+            font-size: 0.7rem;
+        }
+        .btn-sm:hover {
+            background: #e0e7ef;
+        }
+        .btn-primary {
+            background: #1f2a44;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #2e3d60;
+        }
+
+        /* filter bar */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem 1rem;
+            margin: 1.5rem 0 1rem;
+            padding: 0.5rem 0;
+        }
+        .filter-btn {
+            background: white;
+            border: 1px solid #d8e2ed;
+            padding: 0.5rem 1.4rem;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+        .filter-btn.active-filter {
+            background: #1f2a44;
+            border-color: #1f2a44;
+            color: white;
+        }
+
+        /* modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 20, 30, 0.5);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal.active-modal {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            max-width: 450px;
+            width: 90%;
+            border-radius: 32px;
+            padding: 2rem;
+            box-shadow: 0 40px 70px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 1.2rem; right: 1.5rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #7e8b9e;
+        }
+        .preview-details {
+            margin: 1.5rem 0;
+        }
+
+        /* cart items */
+        .cart-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            margin: 0.8rem 0;
+            box-shadow: 0 2px 10px #e4eaf0;
+        }
+        .cart-item-info {
+            flex: 1;
+        }
+        .cart-item-price {
+            font-weight: 700;
+            margin-right: 1.5rem;
+        }
+        .remove-btn {
+            background: none;
+            border: 1px solid #cfddee;
+            border-radius: 30px;
+            padding: 0.3rem 1rem;
+            cursor: pointer;
+        }
+
+        /* contact form */
+        .contact-form {
+            background: white;
+            max-width: 600px;
+            border-radius: 30px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #dce5ed;
+            border-radius: 60px;
+            font-size: 1rem;
+        }
+        textarea {
+            border-radius: 30px;
+            resize: vertical;
+        }
+
+        /* category chips */
+        .category-chip-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .category-chip {
+            background: white;
+            padding: 1.2rem 2.5rem;
+            border-radius: 100px;
+            box-shadow: 0 5px 15px #e0e8f0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid transparent;
+        }
+        .category-chip:hover {
+            border-color: #1f2a44;
+            background: #f6f9ff;
+        }
+
+        /* responsive */
+        @media (max-width: 700px) {
+            header {
+                flex-direction: column;
+                gap: 0.8rem;
+                padding: 1rem;
+            }
+            .nav-links {
+                justify-content: center;
+            }
+            main {
+                padding: 1.5rem 1rem;
+            }
+            .book-grid {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>PAGE & PRESS <span>⋆ online bookstore</span></h1>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" data-page="home" class="active">Home</a></li>
+            <li><a href="#" data-page="books">Books</a></li>
+            <li><a href="#" data-page="categories">Categories</a></li>
+            <li><a href="#" data-page="details">Book Details</a></li>
+            <li><a href="#" data-page="cart">Cart <span id="cart-count" class="cart-badge">0</span></a></li>
+            <li><a href="#" data-page="contact">Contact</a></li>
+        </ul>
+    </header>
+
+    <main>
+        <!-- HOME page -->
+        <section id="home" class="page-section active-section">
+            <h2>Welcome to your next chapter ✦</h2>
+            <div class="book-grid" id="home-books"></div>
+        </section>
+
+        <!-- BOOKS page (with filter) -->
+        <section id="books" class="page-section">
+            <h2>All Books</h2>
+            <div class="filter-bar" id="category-filters"></div>
+            <div class="book-grid" id="books-container"></div>
+        </section>
+
+        <!-- CATEGORIES page -->
+        <section id="categories" class="page-section">
+            <h2>Browse by category</h2>
+            <div class="category-chip-list" id="category-list"></div>
+        </section>
+
+        <!-- BOOK DETAILS page (single book) -->
+        <section id="details" class="page-section">
+            <h2>Book Details</h2>
+            <div id="details-container"></div>
+        </section>
+
+        <!-- CART page -->
+        <section id="cart" class="page-section">
+            <h2>Your cart</h2>
+            <div id="cart-container"></div>
+            <div style="margin-top:2rem; font-weight:600;" id="cart-total"></div>
+        </section>
+
+        <!-- CONTACT page -->
+        <section id="contact" class="page-section">
+            <h2>Get in touch</h2>
+            <div class="contact-form">
+                <div class="form-group"><input type="text" placeholder="Your name"></div>
+                <div class="form-group"><input type="email" placeholder="Email address"></div>
+                <div class="form-group"><textarea rows="4" placeholder="Message..."></textarea></div>
+                <button class="btn-sm btn-primary" style="padding:1rem 2rem;">Send message</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 PAGE & PRESS — frontend demo. all pages & features simulated.</p>
+    </footer>
+
+    <!-- MODAL for quick preview -->
+    <div id="bookModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // --- DATA (books) ---
+            const books = [
+                { id: 'gatsby', title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', category: 'Fiction', price: 10.99, rating: 4.5, description: 'A portrait of the Jazz Age, full of longing and betrayal.', imageColor: '#b9836d' },
+                { id: 'sapiens', title: 'Sapiens', author: 'Yuval Harari', category: 'Non-Fiction', price: 15.99, rating: 4.8, description: 'Brief history of humankind, from stone age to silicon.', imageColor: '#78a5b0' },
+                { id: '1984', title: '1984', author: 'George Orwell', category: 'Fiction', price: 9.99, rating: 4.7, description: 'Dystopian classic about surveillance and truth.', imageColor: '#a55d5d' },
+                { id: 'brief', title: 'Brief Answers', author: 'S. Hawking', category: 'Science', price: 12.50, rating: 4.6, description: 'Big questions tackled by the legendary physicist.', imageColor: '#2c5f7e' },
+                { id: 'becoming', title: 'Becoming', author: 'Michelle Obama', category: 'Biography', price: 14.99, rating: 4.9, description: 'Memoir of the former First Lady.', imageColor: '#ab7f64' },
+                { id: 'selfish', title: 'The Selfish Gene', author: 'R. Dawkins', category: 'Science', price: 13.75, rating: 4.4, description: 'Evolutionary view of life and behaviour.', imageColor: '#62929e' },
+                { id: 'murakami', title: 'Kafka on the Shore', author: 'H. Murakami', category: 'Fiction', price: 12.99, rating: 4.3, description: 'Surreal journey between cats and komuras.', imageColor: '#4f6d7f' },
+                { id: 'carlo', title: 'Silent Spring', author: 'R. Carson', category: 'Science', price: 11.20, rating: 4.5, description: 'Environmental science classic.', imageColor: '#5d816b' }
+            ];
+
+            // --- GLOBAL STATE ---
+            let cart = JSON.parse(localStorage.getItem('bookstore_cart')) || [];   // { id, title, price, quantity }
+            let currentFilter = 'All';
+            let selectedBookId = books[0].id;      // default details page
+            let currentPage = 'home';
+
+            // --- helper: save cart ---
+            function saveCart() {
+                localStorage.setItem('bookstore_cart', JSON.stringify(cart));
+                updateCartCount();
+                if (currentPage === 'cart') renderCartPage();
+            }
+
+            // --- update cart number in header ---
+            function updateCartCount() {
+                const total = cart.reduce((acc, item) => acc + item.quantity, 0);
+                document.getElementById('cart-count').innerText = total;
+            }
+
+            // --- add to cart logic (with quantity) ---
+            function addToCart(book) {
+                const existing = cart.find(item => item.id === book.id);
+                if (existing) {
+                    existing.quantity += 1;
+                } else {
+                    cart.push({ id: book.id, title: book.title, price: book.price, quantity: 1 });
+                }
+                saveCart();
+                alert(`"${book.title}" added to cart`);
+            }
+
+            // --- remove from cart (entire item) ---
+            function removeCartItem(bookId) {
+                cart = cart.filter(item => item.id !== bookId);
+                saveCart();
+            }
+
+            // --- render stars (fontawesome) ---
+            function renderStars(rating) {
+                let stars = '';
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= Math.floor(rating)) stars += '<i class="fas fa-star"></i>';
+                    else if (i === Math.floor(rating) + 1 && rating % 1 >= 0.5) stars += '<i class="fas fa-star-half-alt"></i>';
+                    else stars += '<i class="far fa-star"></i>';
+                }
+                return stars + `<span>${rating}</span>`;
+            }
+
+            // --- generate book card HTML (reusable) ---
+            function bookCardHTML(book, extended = false) {
+                return `
+                    <div class="book-card" data-id="${book.id}">
+                        <div class="book-cover" style="background: ${book.imageColor}70; color:#1f2a44;">📖</div>
+                        <div class="book-title">${book.title}</div>
+                        <div class="book-author">${book.author}</div>
+                        <div class="price-rating">
+                            <span class="price">$${book.price.toFixed(2)}</span>
+                            <span class="rating">${renderStars(book.rating)}</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-sm quick-view" data-id="${book.id}"><i class="fas fa-eye"></i> Quick</button>
+                            <button class="btn-sm add-to-cart" data-id="${book.id}"><i class="fas fa-cart-plus"></i> Add</button>
+                            <button class="btn-sm btn-primary details-view" data-id="${book.id}"><i class="fas fa-info-circle"></i> Details</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // --- render home (first 4 books) ---
+            function renderHome() {
+                const container = document.getElementById('home-books');
+                container.innerHTML = books.slice(0,4).map(book => bookCardHTML(book)).join('');
+            }
+
+            // --- render books page with filter ---
+            function renderBooksPage() {
+                const container = document.getElementById('books-container');
+                const filterDiv = document.getElementById('category-filters');
+                const categories = ['All', ...new Set(books.map(b => b.category))];
+                filterDiv.innerHTML = categories.map(cat => 
+                    `<button class="filter-btn ${currentFilter === cat ? 'active-filter' : ''}" data-cat="${cat}">${cat}</button>`
+                ).join('');
+
+                const filtered = currentFilter === 'All' ? books : books.filter(b => b.category === currentFilter);
+                container.innerHTML = filtered.map(book => bookCardHTML(book)).join('');
+            }
+
+            // --- categories page ---
+            function renderCategoriesPage() {
+                const catMap = new Map();
+                books.forEach(b => catMap.set(b.category, (catMap.get(b.category)||0)+1));
+                const container = document.getElementById('category-list');
+                container.innerHTML = Array.from(catMap.entries()).map(([cat, count]) => 
+                    `<div class="category-chip" data-cat="${cat}">${cat} <span style="color:#8395a7;">(${count} books)</span></div>`
+                ).join('');
+            }
+
+            // --- details page (selectedBookId) ---
+            function renderDetailsPage() {
+                const book = books.find(b => b.id === selectedBookId) || books[0];
+                const container = document.getElementById('details-container');
+                container.innerHTML = `
+                    <div style="background:white; border-radius:28px; padding:2rem; max-width:700px;">
+                        <div style="display:flex; gap:2rem; flex-wrap:wrap;">
+                            <div style="background:${book.imageColor}; width:200px; height:250px; border-radius:28px; display:flex; align-items:center; justify-content:center; font-size:3rem;">📚</div>
+                            <div style="flex:1;">
+                                <h3 style="font-size:2rem;">${book.title}</h3>
+                                <p style="color:#3f5575;">by ${book.author}</p>
+                                <div class="rating" style="font-size:1.3rem; margin:0.5rem 0;">${renderStars(book.rating)}</div>
+                                <p style="margin:1rem 0; line-height:1.5;">${book.description}</p>
+                                <p style="font-size:2rem; font-weight:600;">$${book.price.toFixed(2)}</p>
+                                <div style="display:flex; gap:1rem; margin-top:2rem;">
+                                    <button class="btn-sm btn-primary" id="details-add-cart"><i class="fas fa-cart-plus"></i> Add to cart</button>
+                                    <button class="btn-sm quick-view" data-id="${book.id}"><i class="fas fa-eye"></i> Quick preview</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                // attach event to the details-add-cart
+                document.getElementById('details-add-cart')?.addEventListener('click', () => addToCart(book));
+            }
+
+            // --- cart page ---
+            function renderCartPage() {
+                const container = document.getElementById('cart-container');
+                if (cart.length === 0) {
+                    container.innerHTML = '<p style="padding:2rem;">Your cart feels lonely. Add some books ✦</p>';
+                    document.getElementById('cart-total').innerText = '';
+                    return;
+                }
+                let html = '';
+                let total = 0;
+                cart.forEach(item => {
+                    const book = books.find(b => b.id === item.id) || { title: item.title, price: item.price };
+                    total += item.price * item.quantity;
+                    html += `
+                        <div class="cart-item">
+                            <div class="cart-item-info"><strong>${book.title}</strong> x${item.quantity}</div>
+                            <div class="cart-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+                            <button class="remove-btn" data-id="${item.id}"><i class="fas fa-trash-alt"></i> remove</button>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+                document.getElementById('cart-total').innerHTML = `<strong>Total: $${total.toFixed(2)}</strong>`;
+            }
+
+            // --- MODAL functions ---
+            const modal = document.getElementById('bookModal');
+            const modalBody = document.getElementById('modal-body');
+            function showModal(book) {
+                modalBody.innerHTML = `
+                    <h3 style="font-size:1.8rem;">${book.title}</h3>
+                    <p style="color:#2d4059;">${book.author}</p>
+                    <div style="background:${book.imageColor}30; border-radius:16px; padding:2rem; margin:1rem 0; text-align:center;">📘 cover</div>
+                    <p>${book.description}</p>
+                    <div class="price-rating" style="margin:1.5rem 0;"><span class="price">$${book.price}</span> <span class="rating">${renderStars(book.rating)}</span></div>
+                    <button class="btn-sm btn-primary" id="modal-add-cart"><i class="fas fa-cart-plus"></i> Add to cart</button>
+                `;
+                modal.classList.add('active-modal');
+                document.getElementById('modal-add-cart')?.addEventListener('click', () => {
+                    addToCart(book);
+                    modal.classList.remove('active-modal');
+                });
+            }
+
+            // --- hide modal ---
+            document.querySelector('.close-modal').addEventListener('click', () => modal.classList.remove('active-modal'));
+            window.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active-modal'); });
+
+            // --- show page & render ---
+            function showPage(pageId) {
+                document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active-section'));
+                document.getElementById(pageId).classList.add('active-section');
+                document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+                document.querySelector(`.nav-links a[data-page="${pageId}"]`).classList.add('active');
+                currentPage = pageId;
+
+                if (pageId === 'home') renderHome();
+                if (pageId === 'books') renderBooksPage();
+                if (pageId === 'categories') renderCategoriesPage();
+                if (pageId === 'details') renderDetailsPage();
+                if (pageId === 'cart') renderCartPage();
+                // contact is static
+            }
+
+            // --- event listeners ---
+            // navigation
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = link.dataset.page;
+                    showPage(page);
+                });
+            });
+
+            // global click handler (dynamic buttons)
+            document.addEventListener('click', (e) => {
+                // filter buttons (books page)
+                if (e.target.classList.contains('filter-btn')) {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter'));
+                    e.target.classList.add('active-filter');
+                    currentFilter = e.target.dataset.cat;
+                    renderBooksPage();
+                }
+                // category chip click -> go to books with filter
+                if (e.target.closest('.category-chip')) {
+                    const chip = e.target.closest('.category-chip');
+                    const cat = chip.dataset.cat;
+                    currentFilter = cat;
+                    showPage('books');
+                }
+                // quick view (modal)
+                if (e.target.closest('.quick-view')) {
+                    const btn = e.target.closest('.quick-view');
+                    const id = btn.dataset.id;
+                    const book = books.find(b => b.id === id);
+                    if (book) showModal(book);
+                }
+                // add to cart (from card)
+                if (e.target.closest('.add-to-cart')) {
+                    const btn = e.target.closest('.add-to-cart');
+                    const id = btn.dataset.id;
+                    const book = books.find(b => b.id === id);
+                    if (book) addToCart(book);
+                }
+                // details view -> go to details page
+                if (e.target.closest('.details-view')) {
+                    const btn = e.target.closest('.details-view');
+                    const id = btn.dataset.id;
+                    selectedBookId = id;
+                    showPage('details');
+                }
+                // remove from cart
+                if (e.target.closest('.remove-btn')) {
+                    const btn = e.target.closest('.remove-btn');
+                    const id = btn.dataset.id;
+                    removeCartItem(id);
+                }
+            });
+
+            // --- initial load: home, cart count---
+            renderHome();
+            updateCartCount();
+            // set home active
+            showPage('home');
+        })();
+    </script>
+</body>
+</html>
